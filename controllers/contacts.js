@@ -1,16 +1,15 @@
-const contacts = require('../models/contacts')
+const { Contact } = require('../models/contact');
 
-const { HttpError } = require('../helpers');
-const { ctrlWrapper } = require('../helpers');
+const { HttpError, ctrlWrapper } = require('../helpers');
 
 const getContacts = async (req, res) => {
-      const result = await contacts.listContacts()
-      return res.status(200).json(result);
+  const result = await Contact.find();
+  return res.status(200).json(result);
 }
 
 const getById = async (req, res) => {
-    const { contactId } = req.params;
-    const result = await contacts.getContactById(contactId);
+    const { id } = req.params;
+  const result = await Contact.findById(id);
     if (!result) {
       throw HttpError(404, 'Not found');
     }
@@ -18,13 +17,13 @@ const getById = async (req, res) => {
 }
 
 const add =  async (req, res) => {
-  const result = await contacts.addContact(req.body);
+  const result = await Contact.create(req.body);
    return res.status(201).json(result);
 }
 
 const updateById = async (req, res) => {
-    const { contactId } = req.params;
-    const result = await contacts.updateContact(contactId, req.body);
+    const { id } = req.params;
+    const result = await Contact.findByIdAndUpdate(id, req.body, {new: true});
     if (!result) {
       throw HttpError(404, 'Not found');
   }
@@ -34,9 +33,21 @@ const updateById = async (req, res) => {
     return res.json(result);
 }
 
+const updateFavorite = async (req, res) => {
+    const { id } = req.params;
+    const result = await Contact.findByIdAndUpdate(id, req.body, {new: true});
+    if (!result) {
+      throw HttpError(404, 'Not found');
+  }
+    if (!Object.keys(req.body).length) {
+    throw HttpError(400, "missing field favorite");
+  }
+    return res.json(result);
+}
+
 const deleteByID = async (req, res) => {
-  const { contactId } = req.params;
-    const result = await contacts.removeContact(contactId);
+  const { id } = req.params;
+    const result = await Contact.findByIdAndRemove(id);
     if (!result) {
       throw HttpError(404, 'Not found');
     }
@@ -48,6 +59,7 @@ module.exports = {
     getById: ctrlWrapper(getById),
     add: ctrlWrapper(add),
     updateById: ctrlWrapper(updateById),
+    updateFavorite: ctrlWrapper(updateFavorite),
     deleteByID: ctrlWrapper(deleteByID),
 }
 
