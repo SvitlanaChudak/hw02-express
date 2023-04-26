@@ -19,8 +19,10 @@ const register = async (req, res) => {
     const newUser = await User.create({ ...req.body, password: hashPassword, subscription, });
 
     res.status(201).json({
+user: {
         email: newUser.email,
         subscription: newUser.subscription,
+      },
     })
 }
 
@@ -43,7 +45,11 @@ const payload = {
   await User.findByIdAndUpdate(user._id, { token });
   
   res.json({
-        token,
+ token,
+  user: {
+    email: user.email,
+    subscription: user.subscription,
+  }
     })
 }
 
