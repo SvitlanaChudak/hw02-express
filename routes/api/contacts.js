@@ -8,7 +8,7 @@ const { schema } = require('../../models/contact');
 
 const ctrl = require('../../controllers/contacts');
 
-router.get('/', ctrl.getContacts);
+router.get('/', authenticate, ctrl.getContacts);
 
 router.get('/:id', authenticate, isValidId, ctrl.getById);
 
